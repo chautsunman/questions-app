@@ -10,6 +10,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Questions from './Questions';
 
+import {addQuestion} from './questionsApi';
+
 import './App.css';
 
 const useStyles = makeStyles({
@@ -19,12 +21,13 @@ const useStyles = makeStyles({
 function App() {
   const classes = useStyles();
 
-  const pickQuestion = () => {
+  const onPickQuestionClick = () => {
     console.log('Pick a random question');
   };
 
-  const addQuestion = () => {
+  const onAddQuestionClick = async () => {
     console.log('Add a question');
+    await addQuestion('new question');
   };
   
   return (
@@ -40,11 +43,11 @@ function App() {
       <div className={classes.body}>
         <Questions />
 
-        <Button variant="contained" color="primary" onClick={pickQuestion}>
+        <Button variant="contained" color="primary" onClick={onPickQuestionClick}>
           Pick a random question
         </Button>
 
-        <Fab color="primary" aria-label="add question" onClick={addQuestion}>
+        <Fab color="primary" aria-label="add question" onClick={onAddQuestionClick}>
           <AddIcon />
         </Fab>
       </div>
