@@ -6,15 +6,15 @@ export const getQuestions = async () => {
   console.log('get questions');
 
   try {
-    let res = await fetch(`${apiPath}/getQuestions`);
-    res = res.json();
+    const res = await fetch(`${apiPath}/questions`);
+    const resJson = await res.json();
 
-    if (!res.success) {
-      throw new Error('add question api successful, but not added');
+    if (!resJson.success) {
+      throw new Error('get question api successful, but not success');
     }
     
     console.log('get questions successful');
-    return res.data;
+    return resJson.data;
   } catch (err) {
     console.log('get questions error', err);
     return [];
@@ -31,7 +31,7 @@ export const addQuestion = async (question) => {
   };
 
   try {
-    let res = await fetch(`${apiPath}/addQuestion`, {
+    const res = await fetch(`${apiPath}/addQuestion`, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -43,9 +43,9 @@ export const addQuestion = async (question) => {
       referrerPolicy: 'no-referrer',
       body: JSON.stringify(data)
     });
-    res = res.json();
+    const resJson = res.json();
 
-    if (!res.success) {
+    if (!resJson.success) {
       throw new Error('add question api successful, but not added');
     }
 
