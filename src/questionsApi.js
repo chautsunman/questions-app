@@ -25,9 +25,7 @@ export const addQuestion = async (question) => {
   console.log('add question');
 
   const data = {
-    question: {
-      question: question
-    }
+    question: question
   };
 
   try {
@@ -43,7 +41,7 @@ export const addQuestion = async (question) => {
       referrerPolicy: 'no-referrer',
       body: JSON.stringify(data)
     });
-    const resJson = res.json();
+    const resJson = await res.json();
 
     if (!resJson.success) {
       throw new Error('add question api successful, but not added');

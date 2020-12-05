@@ -1,6 +1,9 @@
+import {useState, useCallback} from 'react';
+
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
+import TextField from '@material-ui/core/TextField';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
@@ -21,14 +24,22 @@ const useStyles = makeStyles({
 function App() {
   const classes = useStyles();
 
+  const [newQuestion, setNewQuestion] = useState('');
+
   const onPickQuestionClick = () => {
     console.log('Pick a random question');
   };
 
-  const onAddQuestionClick = async () => {
-    console.log('Add a question');
-    await addQuestion('new question');
-  };
+  const onNewQuestionChange = useCallback((event) => {
+    setNewQuestion(event.target.value);
+  }, []);
+
+  const onAddQuestionClick = useCallback(async () => {
+    console.log('Add a question', newQuestion);
+    if (newQuestion !== '') {
+      await addQuestion(newQuestion);
+    }
+  }, [newQuestion]);
   
   return (
     <div className="App">
@@ -47,6 +58,7 @@ function App() {
           Pick a random question
         </Button>
 
+        <TextField id="newQuestion" label="Question" value={newQuestion} onChange={onNewQuestionChange} />
         <Fab color="primary" aria-label="add question" onClick={onAddQuestionClick}>
           <AddIcon />
         </Fab>
