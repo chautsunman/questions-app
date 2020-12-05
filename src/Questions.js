@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 
-import Question from './Question';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 import {getQuestions} from './questionsApi';
 
@@ -17,7 +19,14 @@ const Questions = (props) => {
   
   return (
     <div>
-      {questions.map(question => <Question key={question.id} question={question} />)}
+      <List dense={true}>
+        {questions.map(question => (
+          <ListItem key={question.id}>
+            <ListItemText
+              primary={question.question} />
+          </ListItem>
+        ))}
+      </List>
     </div>
   );
 };
