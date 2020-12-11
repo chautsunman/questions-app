@@ -9,13 +9,20 @@ import Typography from '@material-ui/core/Typography';
 
 import AddIcon from '@material-ui/icons/Add';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import deepPurple from '@material-ui/core/colors/deepPurple';
 
 import Questions from './Questions';
 
 import {addQuestion, getRandomQuestion} from './questionsApi';
 
 import './App.css';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: deepPurple,
+  },
+});
 
 const useStyles = makeStyles({
   body: {}
@@ -46,28 +53,30 @@ function App() {
   
   return (
     <div className="App">
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6">
-            Questions
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <ThemeProvider theme={theme}>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6">
+              Questions
+            </Typography>
+          </Toolbar>
+        </AppBar>
 
-      <div className={classes.body}>
-        <Questions />
+        <div className={classes.body}>
+          <Questions />
 
-        <Button variant="contained" color="primary" onClick={onPickQuestionClick}>
-          Pick a random question
-        </Button>
+          <Button variant="contained" color="primary" onClick={onPickQuestionClick}>
+            Pick a random question
+          </Button>
 
-        <TextField id="newQuestion" label="Question" value={newQuestion} onChange={onNewQuestionChange} />
-        <Fab color="primary" aria-label="add question" onClick={onAddQuestionClick}>
-          <AddIcon />
-        </Fab>
+          <TextField id="newQuestion" label="Question" value={newQuestion} onChange={onNewQuestionChange} />
+          <Fab color="primary" aria-label="add question" onClick={onAddQuestionClick}>
+            <AddIcon />
+          </Fab>
 
-        <div>{(randomQuestion !== null) ? randomQuestion.question : ''}</div>
-      </div>
+          <div>{(randomQuestion !== null) ? randomQuestion.question : ''}</div>
+        </div>
+      </ThemeProvider>
     </div>
   );
 }
