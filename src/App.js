@@ -1,6 +1,7 @@
 import {useState, useCallback} from 'react';
 
 import AppBar from '@material-ui/core/AppBar';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import TextField from '@material-ui/core/TextField';
@@ -10,22 +11,23 @@ import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 
 import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import deepPurple from '@material-ui/core/colors/deepPurple';
+import { deepPurple, orange } from '@material-ui/core/colors';
 
 import Questions from './Questions';
 
 import {addQuestion, getRandomQuestion} from './questionsApi';
 
-import './App.css';
-
 const theme = createMuiTheme({
   palette: {
     primary: deepPurple,
+    secondary: orange
   },
 });
 
 const useStyles = makeStyles({
-  body: {}
+  appRoot: {
+    height: '100vh'
+  }
 });
 
 function App() {
@@ -52,30 +54,38 @@ function App() {
   });
   
   return (
-    <div className="App">
+    <div className={classes.appRoot}>
       <ThemeProvider theme={theme}>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6">
-              Questions
-            </Typography>
-          </Toolbar>
-        </AppBar>
+        <Box height="100%" display="flex" flexDirection="column">
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h6">
+                Questions
+              </Typography>
+            </Toolbar>
+          </AppBar>
 
-        <div className={classes.body}>
-          <Questions />
+          <Box flex="1 1 auto">
+            <Box height="100%" display="flex" flexDirection="row" flexWrap="nowrap">
+              <Box flex="0 0 30%" height="100%" borderRight="1px solid #9E9E9E" padding="8px">
+                <Button variant="contained" color="secondary" onClick={onPickQuestionClick}>
+                  Pick a random question
+                </Button>
+                
+                <Questions />
+              </Box>
 
-          <Button variant="contained" color="primary" onClick={onPickQuestionClick}>
-            Pick a random question
-          </Button>
+              <Box flex="1 1 auto" height="100%" padding="8px">
+                <TextField id="newQuestion" label="Question" value={newQuestion} onChange={onNewQuestionChange} />
+                <Fab color="primary" aria-label="add question" onClick={onAddQuestionClick}>
+                  <AddIcon />
+                </Fab>
 
-          <TextField id="newQuestion" label="Question" value={newQuestion} onChange={onNewQuestionChange} />
-          <Fab color="primary" aria-label="add question" onClick={onAddQuestionClick}>
-            <AddIcon />
-          </Fab>
-
-          <div>{(randomQuestion !== null) ? randomQuestion.question : ''}</div>
-        </div>
+                <div>{(randomQuestion !== null) ? randomQuestion.question : ''}</div>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
       </ThemeProvider>
     </div>
   );
