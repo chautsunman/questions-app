@@ -53,3 +53,22 @@ export const addQuestion = async (question) => {
     return false;
   }
 };
+
+export const getRandomQuestion = async () => {
+  console.log('get random question');
+
+  try {
+    const res = await fetch(`${apiPath}/getRandomQuestion`);
+    const resJson = await res.json();
+
+    if (!resJson.success) {
+      throw new Error('get random question api successful, but not success');
+    }
+    
+    console.log('get random question successful');
+    return resJson.data;
+  } catch (err) {
+    console.log('get random question error', err);
+    return [];
+  }
+};

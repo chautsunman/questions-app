@@ -13,7 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Questions from './Questions';
 
-import {addQuestion} from './questionsApi';
+import {addQuestion, getRandomQuestion} from './questionsApi';
 
 import './App.css';
 
@@ -25,10 +25,7 @@ function App() {
   const classes = useStyles();
 
   const [newQuestion, setNewQuestion] = useState('');
-
-  const onPickQuestionClick = () => {
-    console.log('Pick a random question');
-  };
+  const [randomQuestion, setRandomQuestion] = useState(null);
 
   const onNewQuestionChange = useCallback((event) => {
     setNewQuestion(event.target.value);
@@ -40,6 +37,12 @@ function App() {
       await addQuestion(newQuestion);
     }
   }, [newQuestion]);
+
+  const onPickQuestionClick = useCallback(async () => {
+    console.log('Pick a random question');
+    const question = await getRandomQuestion();
+    setRandomQuestion(question);
+  });
   
   return (
     <div className="App">
@@ -62,6 +65,8 @@ function App() {
         <Fab color="primary" aria-label="add question" onClick={onAddQuestionClick}>
           <AddIcon />
         </Fab>
+
+        <div>{(randomQuestion !== null) ? randomQuestion.question : ''}</div>
       </div>
     </div>
   );
