@@ -1,12 +1,31 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+
+import {BrowserRouter as Router} from "react-router-dom";
+
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { deepPurple, orange } from '@material-ui/core/colors';
+
 import './index.css';
+
 import App from './App';
+
 import reportWebVitals from './reportWebVitals';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: deepPurple,
+    secondary: orange
+  },
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme={theme}>
+      <Router>
+        <App />
+      </Router>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

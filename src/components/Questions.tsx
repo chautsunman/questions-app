@@ -4,10 +4,24 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import {getQuestions} from './questionsApi';
+import {useHistory} from 'react-router-dom';
 
-const Questions = (props) => {
-  const [questions, setQuestions] = useState([]);
+import Question from '../data/Question';
+
+import {getQuestions} from '../services/questionsApi';
+
+type QuestionsProps = {
+
+};
+
+const Questions = (props: QuestionsProps) => {
+  const [questions, setQuestions] = useState([] as Question[]);
+
+  const history = useHistory();
+  
+  const onQuestionClick = (questionId: string) => {
+    history.push(`/question?id=${questionId}`);
+  };
   
   useEffect(() => {
     getQuestions()
@@ -21,7 +35,7 @@ const Questions = (props) => {
     <div>
       <List dense={true}>
         {questions.map(question => (
-          <ListItem key={question.id}>
+          <ListItem key={question.id} onClick={() => onQuestionClick(question.id)} button>
             <ListItemText
               primary={question.question} />
           </ListItem>

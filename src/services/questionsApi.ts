@@ -1,27 +1,44 @@
+import Question from '../data/Question';
+
 import {SERVER_HOST} from './serverDetails';
 
 const apiPath = `${SERVER_HOST}/questions`;
 
-export const getQuestions = async () => {
+type ApiResult<T> = {
+  success: boolean,
+  data: T
+};
+
+export const getQuestions = async (id: string | null = null): Promise<Question[]> => {
   console.log('get questions');
 
   try {
-    const res = await fetch(`${apiPath}/questions`);
-    const resJson = await res.json();
+    const urlParams = new URLSearchParams();
+    if (id) {
+      urlParams.append('id', id);
+    }
+    const res = await fetch(`${apiPath}/questions?${urlParams.toString()}`);
+    const {success, data} = (await res.json()) as ApiResult<Question[]>;
 
-    if (!resJson.success) {
+    if (!success) {
       throw new Error('get question api successful, but not success');
     }
     
     console.log('get questions successful');
-    return resJson.data;
+    return data;
   } catch (err) {
     console.log('get questions error', err);
     return [];
   }
 };
 
-export const addQuestion = async (question) => {
+export const getQuestion = async (id: string): Promise<Question | null> => {
+  console.log('get question', id);
+  const questions = await getQuestions(id);
+  return (questions.length) ? questions[0] : null;
+};
+
+export const addQuestion = async (question: Question): Promise<boolean> => {
   console.log('add question');
 
   const data = {
@@ -41,9 +58,9 @@ export const addQuestion = async (question) => {
       referrerPolicy: 'no-referrer',
       body: JSON.stringify(data)
     });
-    const resJson = await res.json();
+    const {success} = (await res.json()) as ApiResult<boolean>;
 
-    if (!resJson.success) {
+    if (!success) {
       throw new Error('add question api successful, but not added');
     }
 
@@ -54,21 +71,21 @@ export const addQuestion = async (question) => {
   }
 };
 
-export const getRandomQuestion = async () => {
+export const getRandomQuestion = async (): Promise<Question | null> => {
   console.log('get random question');
 
   try {
     const res = await fetch(`${apiPath}/getRandomQuestion`);
-    const resJson = await res.json();
+    const {success, data} = (await res.json()) as ApiResult<Question>;
 
-    if (!resJson.success) {
+    if (!success || data == null) {
       throw new Error('get random question api successful, but not success');
     }
     
     console.log('get random question successful');
-    return resJson.data;
+    return data;
   } catch (err) {
     console.log('get random question error', err);
-    return [];
+    return null;
   }
 };
