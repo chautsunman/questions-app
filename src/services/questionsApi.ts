@@ -25,7 +25,7 @@ export const getQuestions = async (id: string | null = null): Promise<Question[]
     }
     
     console.log('get questions successful');
-    return data;
+    return data.map((questionObj) => Object.assign(new Question(), questionObj));
   } catch (err) {
     console.log('get questions error', err);
     return [];
@@ -38,12 +38,10 @@ export const getQuestion = async (id: string): Promise<Question | null> => {
   return (questions.length) ? questions[0] : null;
 };
 
-export const addQuestion = async (question: Question): Promise<boolean> => {
+export const addQuestion = async (question: Question): Promise<string | null> => {
   console.log('add question');
 
-  const data = {
-    question: question
-  };
+  const formData = question;
 
   try {
     const res = await fetch(`${apiPath}/addQuestion`, {
@@ -56,18 +54,51 @@ export const addQuestion = async (question: Question): Promise<boolean> => {
       },
       redirect: 'follow',
       referrerPolicy: 'no-referrer',
-      body: JSON.stringify(data)
+      body: JSON.stringify(formData)
     });
-    const {success} = (await res.json()) as ApiResult<boolean>;
+    const {success, data} = (await res.json()) as ApiResult<string | null>;
 
-    if (!success) {
+    if (!success || data === null) {
       throw new Error('add question api successful, but not added');
     }
 
-    return true;
+    console.log('add question successful');
+    return data;
   } catch (err) {
     console.log('add question error', err);
-    return false;
+    return null;
+  }
+};
+
+export const updateQuestion = async (question: Question): Promise<string | null> => {
+  console.log('update question');
+
+  const formData = question;
+
+  try {
+    const res = await fetch(`${apiPath}/updateQuestion`, {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      redirect: 'follow',
+      referrerPolicy: 'no-referrer',
+      body: JSON.stringify(formData)
+    });
+    const {success, data} = (await res.json()) as ApiResult<string | null>;
+
+    if (!success || data === null) {
+      throw new Error('update question api successful, but not added');
+    }
+
+    console.log('update question successful');
+    return data;
+  } catch (err) {
+    console.log('update question error', err);
+    return null;
   }
 };
 

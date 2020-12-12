@@ -1,24 +1,34 @@
 import React, {useState, useEffect} from 'react';
 
+import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import {useLocation} from 'react-router-dom';
+import {useLocation, useHistory} from 'react-router-dom';
 
 import Question from "../data/Question";
 
-import {getQuestion, addQuestion, getRandomQuestion} from '../services/questionsApi';
+import {getQuestion, addQuestion, updateQuestion, getRandomQuestion} from '../services/questionsApi';
 
 type QuestionDetailsProps = {
 
 };
 
+enum EditMode {
+  EDIT,
+  ADD,
+  INVALID
+};
+
 const QuestionDetails = (props: QuestionDetailsProps) => {
+  const [editMode, setEditMode] = useState(EditMode.INVALID);
   const [question, setQuestion] = useState(null as Question | null);
 
   const location = useLocation();
   const pathname = location.pathname;
   const urlParams = new URLSearchParams(location.search);
+
+  const history = useHistory();
 
   useEffect(() => {
     (async () => {
@@ -28,21 +38,29 @@ const QuestionDetails = (props: QuestionDetailsProps) => {
       if (pathnameSplit.length === 2 && urlParams.get('id')) {
         const questionId = urlParams.get('id');
 
-        if (questionId) {
+        if (questionId !== null) {
+          setEditMode(EditMode.EDIT);
           const question = await getQuestion(questionId);
           setQuestion(question);
+          return;
         }
         
       } else if (pathnameSplit.length === 3) {
         if (pathnameSplit[2] === 'newQuestion') {
+          setEditMode(EditMode.ADD);
           setQuestion(new Question());
+          return;
 
         } else if (pathnameSplit[2] === 'randomQuestion') {
+          setEditMode(EditMode.EDIT);
           const randomQuestion = await getRandomQuestion();
           setQuestion(randomQuestion);
+          return;
 
         }
       }
+
+      setEditMode(EditMode.INVALID);
     })();
   }, [pathname, urlParams.get('id')]);
 
@@ -54,7 +72,38 @@ const QuestionDetails = (props: QuestionDetailsProps) => {
     }
   };
 
-  if (!question) {
+  const onSave = async () => {
+    console.log('save', editMode);
+
+    if (!question) {
+      return;
+    }
+
+    let questionId: string | null, updatedQuestion: Question | null;
+    switch (editMode) {
+      case EditMode.ADD:
+        questionId = await addQuestion(question);
+        if (questionId !== null) {
+          console.log('saved, refreshing');
+          history.push(`/question?id=${questionId}`);
+        }
+        break;
+      
+      case EditMode.EDIT:
+        questionId = await updateQuestion(question);
+        if (questionId !== null) {
+          console.log('saved, refreshing');
+          updatedQuestion = await getQuestion(questionId);
+          setQuestion(updatedQuestion);
+        }
+        break;
+      
+      default:
+        break;
+    }
+  };
+
+  if (editMode === EditMode.INVALID || !question) {
     return (
       <Typography variant="h4" gutterBottom>Question Details</Typography>
     );
@@ -70,6 +119,10 @@ const QuestionDetails = (props: QuestionDetailsProps) => {
         onChange={onQuestionChange}
         fullWidth
       />
+
+      <Button variant="contained" color="secondary" onClick={onSave}>
+        Save
+      </Button>
     </div>
   );
 };
