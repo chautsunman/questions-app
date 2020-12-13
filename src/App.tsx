@@ -13,7 +13,7 @@ import {Switch, Route, useHistory} from "react-router-dom";
 import {makeStyles} from '@material-ui/core/styles';
 
 import Questions from './components/Questions';
-import QuestionDetails from './components/QuestionDetails';
+import QuestionDetailsPage from './components/QuestionDetailsPage';
 
 const useStyles = makeStyles({
   appRoot: {
@@ -63,7 +63,7 @@ function App() {
             <Box flex="1 1 auto" height="100%" padding="8px">
               <Switch>
                 <Route path="/question">
-                  <QuestionDetails />
+                  <QuestionDetailsPage />
                 </Route>
 
                 <Route path="/" exact>
