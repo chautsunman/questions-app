@@ -1,13 +1,9 @@
 import Question from '../data/Question';
 
 import {SERVER_HOST} from './serverDetails';
+import {ApiResult} from './ApiResult';
 
 const apiPath = `${SERVER_HOST}/questions`;
-
-type ApiResult<T> = {
-  success: boolean,
-  data: T
-};
 
 export const getQuestions = async (id: string | null = null): Promise<Question[]> => {
   console.log('get questions');

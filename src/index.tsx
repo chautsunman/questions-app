@@ -3,12 +3,16 @@ import ReactDOM from 'react-dom';
 
 import {BrowserRouter as Router} from "react-router-dom";
 
+import { FirebaseAppProvider } from 'reactfire';
+
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { deepPurple, orange } from '@material-ui/core/colors';
 
 import './index.css';
 
 import App from './App';
+
+import firebaseConfig from './firebaseConfig.json';
 
 import reportWebVitals from './reportWebVitals';
 
@@ -21,11 +25,13 @@ const theme = createMuiTheme({
 
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <Router>
-        <App />
-      </Router>
-    </ThemeProvider>
+    <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+      <ThemeProvider theme={theme}>
+        <Router>
+          <App />
+        </Router>
+      </ThemeProvider>
+    </FirebaseAppProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

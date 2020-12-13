@@ -32,8 +32,6 @@ const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
 
   useEffect(() => {
     (async () => {
-      console.log('test', pathname, urlParams.get('id'));
-
       const pathnameSplit = pathname.split('/');
       if (pathnameSplit.length === 2 && urlParams.get('id')) {
         const questionId = urlParams.get('id');
