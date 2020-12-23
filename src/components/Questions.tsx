@@ -11,26 +11,28 @@ import Question from '../data/Question';
 import {getQuestions} from '../services/questionsApi';
 
 type QuestionsProps = {
-
+  questionGroupId: string
 };
 
 const Questions = (props: QuestionsProps) => {
+  const {questionGroupId} = props;
+
   const [questions, setQuestions] = useState([] as Question[]);
 
   const history = useHistory();
-  
-  const onQuestionClick = (questionId: string) => {
-    history.push(`/question?id=${questionId}`);
-  };
-  
+
   useEffect(() => {
-    getQuestions()
+    getQuestions(questionGroupId, null)
         .then(res => {
           console.log('get questions successful');
           setQuestions(res);
         });
-  }, []);
-  
+  }, [questionGroupId]);
+
+  const onQuestionClick = (questionId: string) => {
+    history.push(`/question/${questionGroupId}/${questionId}`);
+  };
+
   return (
     <div>
       <List dense={true}>

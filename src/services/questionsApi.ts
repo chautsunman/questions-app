@@ -5,11 +5,14 @@ import {ApiResult} from './ApiResult';
 
 const apiPath = `${SERVER_HOST}/questions`;
 
-export const getQuestions = async (id: string | null = null): Promise<Question[]> => {
+export const getQuestions = async (groupId: string | null, id: string | null): Promise<Question[]> => {
   console.log('get questions');
 
   try {
     const urlParams = new URLSearchParams();
+    if (groupId) {
+      urlParams.append('groupId', groupId);
+    }
     if (id) {
       urlParams.append('id', id);
     }
@@ -17,9 +20,9 @@ export const getQuestions = async (id: string | null = null): Promise<Question[]
     const {success, data} = (await res.json()) as ApiResult<Question[]>;
 
     if (!success) {
-      throw new Error('get question api successful, but not success');
+      throw new Error('get questions api successful, but not success');
     }
-    
+
     console.log('get questions successful');
     return data.map((questionObj) => Object.assign(new Question(), questionObj));
   } catch (err) {
@@ -30,14 +33,17 @@ export const getQuestions = async (id: string | null = null): Promise<Question[]
 
 export const getQuestion = async (id: string): Promise<Question | null> => {
   console.log('get question', id);
-  const questions = await getQuestions(id);
+  const questions = await getQuestions(null, id);
   return (questions.length) ? questions[0] : null;
 };
 
-export const addQuestion = async (question: Question): Promise<string | null> => {
+export const addQuestion = async (questionGroupId: string, question: Question): Promise<string | null> => {
   console.log('add question');
 
-  const formData = question;
+  const formData = {
+    groupId: questionGroupId,
+    question: question
+  };
 
   try {
     const res = await fetch(`${apiPath}/addQuestion`, {
@@ -66,10 +72,13 @@ export const addQuestion = async (question: Question): Promise<string | null> =>
   }
 };
 
-export const updateQuestion = async (question: Question): Promise<string | null> => {
+export const updateQuestion = async (questionGroupId: string, question: Question): Promise<string | null> => {
   console.log('update question');
 
-  const formData = question;
+  const formData = {
+    groupId: questionGroupId,
+    question: question
+  };
 
   try {
     const res = await fetch(`${apiPath}/updateQuestion`, {
@@ -98,17 +107,19 @@ export const updateQuestion = async (question: Question): Promise<string | null>
   }
 };
 
-export const getRandomQuestion = async (): Promise<Question | null> => {
+export const getRandomQuestion = async (groupId: string): Promise<Question | null> => {
   console.log('get random question');
 
   try {
-    const res = await fetch(`${apiPath}/getRandomQuestion`);
+    const urlParams = new URLSearchParams();
+    urlParams.append('groupId', groupId);
+    const res = await fetch(`${apiPath}/getRandomQuestion?${urlParams.toString()}`);
     const {success, data} = (await res.json()) as ApiResult<Question>;
 
     if (!success || data == null) {
       throw new Error('get random question api successful, but not success');
     }
-    
+
     console.log('get random question successful');
     return data;
   } catch (err) {

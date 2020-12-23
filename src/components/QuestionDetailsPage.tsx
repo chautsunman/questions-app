@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react';
 
-import Typography from '@material-ui/core/Typography';
+import {useRouteMatch} from 'react-router';
+import {useHistory} from 'react-router-dom';
 
-import {useLocation, useHistory} from 'react-router-dom';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 
 import QuestionDetails from './QuestionDetails';
 
@@ -10,59 +12,45 @@ import Question from "../data/Question";
 
 import {getQuestion, addQuestion, updateQuestion, getRandomQuestion} from '../services/questionsApi';
 
-type QuestionDetailsPageProps = {
-
-};
-
 enum EditMode {
   EDIT,
   ADD,
   INVALID
 };
 
+type QuestionDetailsPageProps = {
+  editMode: EditMode,
+  questionGroupId: string,
+  questionId: string | null,
+  onSaved: () => void
+};
+
 const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
-  const [editMode, setEditMode] = useState(EditMode.INVALID);
+  const {editMode, questionGroupId, questionId, onSaved} = props;
+
   const [question, setQuestion] = useState(null as Question | null);
-
-  const location = useLocation();
-  const pathname = location.pathname;
-  const urlParams = new URLSearchParams(location.search);
-
-  const history = useHistory();
 
   useEffect(() => {
     (async () => {
-      const pathnameSplit = pathname.split('/');
-      if (pathnameSplit.length === 2 && urlParams.get('id')) {
-        const questionId = urlParams.get('id');
+      switch (editMode) {
+        case EditMode.ADD:
+          setQuestion(new Question());
+          break;
 
-        if (questionId !== null) {
-          setEditMode(EditMode.EDIT);
+        case EditMode.EDIT:
+          if (!questionId) {
+            break;
+          }
+
           const question = await getQuestion(questionId);
           setQuestion(question);
-          return;
-        }
-        
-      } else if (pathnameSplit.length === 3) {
-        if (pathnameSplit[2] === 'newQuestion') {
-          setEditMode(EditMode.ADD);
-          setQuestion(new Question());
-          return;
+          break;
 
-        } else if (pathnameSplit[2] === 'randomQuestion') {
-          setEditMode(EditMode.EDIT);
-          const randomQuestion = await getRandomQuestion();
-          if (randomQuestion !== null) {
-            history.replace(`/question?id=${randomQuestion.id}`);
-          }
-          return;
-
-        }
+        default:
+          break;
       }
-
-      setEditMode(EditMode.INVALID);
     })();
-  }, [pathname, urlParams.get('id'), history]);
+  }, [editMode, questionId]);
 
   const onSetQuestion = (newQuestion: Question) => {
     setQuestion(newQuestion);
@@ -78,22 +66,25 @@ const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
     let questionId: string | null, updatedQuestion: Question | null;
     switch (editMode) {
       case EditMode.ADD:
-        questionId = await addQuestion(question);
-        if (questionId !== null) {
-          console.log('saved, refreshing');
-          history.push(`/question?id=${questionId}`);
-        }
-        break;
-      
-      case EditMode.EDIT:
-        questionId = await updateQuestion(question);
+        questionId = await addQuestion(questionGroupId, question);
         if (questionId !== null) {
           console.log('saved, refreshing');
           updatedQuestion = await getQuestion(questionId);
           setQuestion(updatedQuestion);
+          onSaved();
         }
         break;
-      
+
+      case EditMode.EDIT:
+        questionId = await updateQuestion(questionGroupId, question);
+        if (questionId !== null) {
+          console.log('saved, refreshing');
+          updatedQuestion = await getQuestion(questionId);
+          setQuestion(updatedQuestion);
+          onSaved();
+        }
+        break;
+
       default:
         break;
     }
@@ -104,13 +95,57 @@ const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
       <Typography variant="h4" gutterBottom>Question Details</Typography>
     );
   }
-  
+
   return (
-    <QuestionDetails
-      question={question}
-      setQuestion={onSetQuestion}
-      onSave={onSave} />
+    <Box padding="16px">
+      <QuestionDetails
+        question={question}
+        setQuestion={onSetQuestion}
+        onSave={onSave} />
+    </Box>
   );
 };
 
-export default QuestionDetailsPage;
+const QuestionDetailsPageFromRoute = () => {
+  const {params} = useRouteMatch();
+  const history = useHistory();
+  const questionGroupId: string = (params as any).questionGroupId;
+  const questionIdFromParams: string = (params as any).questionId;
+
+  const [editMode, setEditMode] = useState(EditMode.INVALID);
+  const [questionId, setQuestionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setEditMode(EditMode.INVALID);
+    (async () => {
+      if (questionIdFromParams === 'newQuestion') {
+        setEditMode(EditMode.ADD);
+      } else if (questionIdFromParams === 'randomQuestion') {
+        const randomQuestion = await getRandomQuestion(questionGroupId);
+        if (randomQuestion !== null) {
+          history.replace(`/question/${questionGroupId}/${randomQuestion.id}`);
+        }
+      } else {
+        setEditMode(EditMode.EDIT);
+        setQuestionId(questionIdFromParams);
+      }
+    })();
+  }, [questionIdFromParams, history]);
+
+  if (editMode === EditMode.INVALID) {
+    return (
+      <div>Loading</div>
+    );
+  }
+
+  return (
+    <QuestionDetailsPage
+      editMode={editMode}
+      questionGroupId={questionGroupId}
+      questionId={questionId}
+      onSaved={() => {}}
+    />
+  );
+};
+
+export default QuestionDetailsPageFromRoute;

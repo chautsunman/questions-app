@@ -1,11 +1,8 @@
 import React, {useState, useEffect, useCallback} from 'react';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import AddIcon from '@material-ui/icons/Add';
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -18,7 +15,9 @@ import {Switch, Route, useHistory} from "react-router-dom";
 
 import {makeStyles} from '@material-ui/core/styles';
 
-import Questions from './components/Questions';
+import QuestionGroups from './components/QuestionGroups';
+import QuestionsPage from './components/QuestionsPage';
+import QuestionGroupDetailsPage from './components/QuestionGroupDetailsPage';
 import QuestionDetailsPage from './components/QuestionDetailsPage';
 import SignInPage from './components/SignInPage';
 
@@ -38,11 +37,15 @@ function App() {
 
   const auth = useAuth();
   const signedIn = useSignedIn();
-  
+
   const [userAccountAnchorEl, setUserAccountAnchorEl] = useState<null | HTMLElement>(null);
   const userAccountOpen = Boolean(userAccountAnchorEl);
 
   const history = useHistory();
+
+  const goHome = useCallback(() => {
+    history.push('/');
+  }, [history]);
 
   const onOpenUserAccount = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setUserAccountAnchorEl(event.currentTarget);
@@ -59,21 +62,12 @@ function App() {
     onCloseUserAccount();
   }, [auth, onCloseUserAccount]);
 
-  const onNewQuestionClick = useCallback(() => {
-    history.push('/question/newQuestion');
-  }, [history]);
-
-  const onPickQuestionClick = useCallback(async () => {
-    console.log('Pick a random question');
-    history.push(`/question/randomQuestion?id=${new Date().getTime()}`);
-  }, [history]);
-  
   return (
     <div className={classes.appRoot}>
       <Box height="100%" display="flex" flexDirection="column">
         <AppBar position="static">
           <Toolbar>
-            <Typography variant="h6" className={classes.appName}>
+            <Typography variant="h6" className={classes.appName} onClick={goHome}>
               Questions
             </Typography>
 
@@ -113,26 +107,30 @@ function App() {
         {signedIn && (
           <Box flex="1 1 auto">
             <Box height="100%" display="flex" flexDirection="row" flexWrap="nowrap">
-              <Box flex="0 0 30%" height="100%" borderRight="1px solid #9E9E9E" padding="8px">
-                <Button variant="contained" color="secondary" onClick={onPickQuestionClick}>
-                  Pick a random question
-                </Button>
+              <Box flex="0 0 30%" height="100%" borderRight="1px solid #9E9E9E" display="flex" flexDirection="column">
+                <Box flex="0 0 30%" borderBottom="1px solid #9E9E9E" padding="16px">
+                  <QuestionGroups />
+                </Box>
 
-                <Fab color="primary" aria-label="new question" onClick={onNewQuestionClick}>
-                  <AddIcon />
-                </Fab>
-                
-                <Questions />
+                <Box flex="0 0 70%" padding="16px">
+                  <QuestionsPage />
+                </Box>
               </Box>
 
-              <Box flex="1 1 auto" height="100%" padding="8px">
+              <Box flex="1 1 auto" height="100%">
                 <Switch>
-                  <Route path="/question">
+                  <Route path="/question/:questionGroupId/:questionId">
                     <QuestionDetailsPage />
                   </Route>
 
+                  <Route path="/questionGroup/:questionGroupId">
+                    <QuestionGroupDetailsPage />
+                  </Route>
+
                   <Route path="/" exact>
-                    View question details.
+                    <Typography variant="h2">
+                      Questions
+                    </Typography>
                   </Route>
                 </Switch>
               </Box>
