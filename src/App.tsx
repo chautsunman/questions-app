@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useCallback} from 'react';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import AppBar from '@material-ui/core/AppBar';
@@ -43,9 +43,14 @@ function App() {
 
   const history = useHistory();
 
-  const goHome = useCallback(() => {
-    history.push('/');
+  const _goHome = useCallback((replace: boolean) => {
+    if (!replace) {
+      history.push('/');
+    } else {
+      history.replace('/');
+    }
   }, [history]);
+  const goHome = useCallback(() => _goHome(false), [_goHome]);
 
   const onOpenUserAccount = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setUserAccountAnchorEl(event.currentTarget);
@@ -55,12 +60,13 @@ function App() {
   }, [setUserAccountAnchorEl]);
 
   const onSignOut = useCallback(() => {
+    _goHome(true);
     auth.signOut()
         .then(() => {
           console.log('signed out');
         });
     onCloseUserAccount();
-  }, [auth, onCloseUserAccount]);
+  }, [auth, _goHome, onCloseUserAccount]);
 
   return (
     <div className={classes.appRoot}>

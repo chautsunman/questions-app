@@ -1,5 +1,5 @@
 export default class QuestionGroup {
-  id: string = '';
+  id: string | null = null;
   name: string = '';
 
   clone = (): QuestionGroup => {

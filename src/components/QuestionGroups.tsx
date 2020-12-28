@@ -18,15 +18,18 @@ type QuestionGroupsProps = {
 
 const QuestionGroups = (props: QuestionGroupsProps) => {
   const {data: user} = useUser();
-  
+
   const [questionGroups, setQuestionGroups] = useState([] as QuestionGroup[]);
 
   const history = useHistory();
-  
-  const onQuestionClick = (questionGroupId: string) => {
+
+  const onQuestionClick = (questionGroupId: string | null) => {
+    if (!questionGroupId) {
+      return;
+    }
     history.push(`/questionGroup/${questionGroupId}`);
   };
-  
+
   useEffect(() => {
     getQuestionGroups(user.uid)
         .then(res => {
@@ -34,7 +37,7 @@ const QuestionGroups = (props: QuestionGroupsProps) => {
           setQuestionGroups(res);
         });
   }, []);
-  
+
   return (
     <div>
       <List dense={true}>

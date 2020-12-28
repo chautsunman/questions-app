@@ -29,7 +29,10 @@ const Questions = (props: QuestionsProps) => {
         });
   }, [questionGroupId]);
 
-  const onQuestionClick = (questionId: string) => {
+  const onQuestionClick = (questionId: string | null) => {
+    if (!questionId) {
+      return;
+    }
     history.push(`/question/${questionGroupId}/${questionId}`);
   };
 
