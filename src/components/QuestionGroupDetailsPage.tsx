@@ -29,7 +29,7 @@ const QuestionGroupDetailsPage = (props: QuestionGroupDetailsPageProps) => {
   const {editMode, questionGroupId, onSaved} = props;
 
   const {data: user} = useUser();
-  
+
   const [questionGroup, setQuestionGroup] = useState(null as QuestionGroup | null);
 
   useEffect(() => {
@@ -38,16 +38,16 @@ const QuestionGroupDetailsPage = (props: QuestionGroupDetailsPageProps) => {
         case EditMode.ADD:
           setQuestionGroup(new QuestionGroup());
           break;
-        
+
         case EditMode.EDIT:
           if (!questionGroupId) {
             break;
           }
-          
-          const questionGroup = await getQuestionGroup(user.uid, questionGroupId);
+
+          const questionGroup = await getQuestionGroup(questionGroupId);
           setQuestionGroup(questionGroup);
           break;
-        
+
         default:
           break;
       }
@@ -68,23 +68,25 @@ const QuestionGroupDetailsPage = (props: QuestionGroupDetailsPageProps) => {
     let questionGroupId: string | null, updatedQuestionGroup: QuestionGroup | null;
     switch (editMode) {
       case EditMode.ADD:
-        questionGroupId = await addQuestionGroup(user.uid, questionGroup);
+        questionGroupId = await addQuestionGroup(questionGroup);
         if (questionGroupId !== null) {
           console.log('saved, refreshing');
-          onSaved();
-        }
-        break;
-      
-      case EditMode.EDIT:
-        questionGroupId = await updateQuestionGroup(user.uid, questionGroup);
-        if (questionGroupId !== null) {
-          console.log('saved, refreshing');
-          updatedQuestionGroup = await getQuestionGroup(user.uid, questionGroupId);
+          updatedQuestionGroup = await getQuestionGroup(questionGroupId);
           setQuestionGroup(updatedQuestionGroup);
           onSaved();
         }
         break;
-      
+
+      case EditMode.EDIT:
+        questionGroupId = await updateQuestionGroup(questionGroup);
+        if (questionGroupId !== null) {
+          console.log('saved, refreshing');
+          updatedQuestionGroup = await getQuestionGroup(questionGroupId);
+          setQuestionGroup(updatedQuestionGroup);
+          onSaved();
+        }
+        break;
+
       default:
         break;
     }
@@ -95,7 +97,7 @@ const QuestionGroupDetailsPage = (props: QuestionGroupDetailsPageProps) => {
       <Typography variant="h4" gutterBottom>Question Group Details</Typography>
     );
   }
-  
+
   return (
     <Box padding="16px">
       <QuestionGroupDetails

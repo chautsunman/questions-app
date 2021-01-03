@@ -1,21 +1,20 @@
 import QuestionGroup from '../data/QuestionGroup';
 
-import {SERVER_HOST} from './serverDetails';
+import {getApi, postApi} from './api';
 import {ApiResult} from './ApiResult';
 
-const apiPath = `${SERVER_HOST}/questionGroups`;
+const apiPath = '/api/questionGroups';
 
-export const getQuestionGroups = async (uid: string, id: string | null = null): Promise<QuestionGroup[]> => {
+export const getQuestionGroups = async (id: string | null = null): Promise<QuestionGroup[]> => {
   console.log('get question groups');
 
   try {
     const urlParams = new URLSearchParams();
-    urlParams.append('uid', uid);
     if (id) {
       urlParams.append('id', id);
     }
 
-    const res = await fetch(`${apiPath}/questionGroups?${urlParams.toString()}`);
+    const res = await getApi(`${apiPath}/questionGroups`, urlParams, {});
     const {success, data} = (await res.json()) as ApiResult<QuestionGroup[]>;
 
     if (!success) {
@@ -30,33 +29,21 @@ export const getQuestionGroups = async (uid: string, id: string | null = null): 
   }
 };
 
-export const getQuestionGroup = async (uid: string, id: string): Promise<QuestionGroup | null> => {
+export const getQuestionGroup = async (id: string): Promise<QuestionGroup | null> => {
   console.log('get question group', id);
-  const questionGroups = await getQuestionGroups(uid, id);
+  const questionGroups = await getQuestionGroups(id);
   return (questionGroups.length) ? questionGroups[0] : null;
 };
 
-export const addQuestionGroup = async (uid: string, questionGroup: QuestionGroup): Promise<string | null> => {
+export const addQuestionGroup = async (questionGroup: QuestionGroup): Promise<string | null> => {
   console.log('add question group');
 
   const formData = {
-    uid: uid,
     questionGroup: questionGroup
   };
 
   try {
-    const res = await fetch(`${apiPath}/addQuestionGroup`, {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(formData)
-    });
+    const res = await postApi(`${apiPath}/addQuestionGroup`, formData, {});
     const {success, data} = (await res.json()) as ApiResult<string | null>;
 
     if (!success || data === null) {
@@ -71,27 +58,15 @@ export const addQuestionGroup = async (uid: string, questionGroup: QuestionGroup
   }
 };
 
-export const updateQuestionGroup = async (uid: string, questionGroup: QuestionGroup): Promise<string | null> => {
+export const updateQuestionGroup = async (questionGroup: QuestionGroup): Promise<string | null> => {
   console.log('update question group');
 
   const formData = {
-    uid: uid,
     questionGroup: questionGroup
   };
 
   try {
-    const res = await fetch(`${apiPath}/updateQuestionGroup`, {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(formData)
-    });
+    const res = await postApi(`${apiPath}/updateQuestionGroup`, formData, {});
     const {success, data} = (await res.json()) as ApiResult<string | null>;
 
     if (!success || data === null) {

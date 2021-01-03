@@ -1,9 +1,9 @@
 import Question from '../data/Question';
 
-import {SERVER_HOST} from './serverDetails';
+import {getApi, postApi} from './api';
 import {ApiResult} from './ApiResult';
 
-const apiPath = `${SERVER_HOST}/questions`;
+const apiPath = '/api/questions';
 
 export const getQuestions = async (groupId: string | null, id: string | null): Promise<Question[]> => {
   console.log('get questions');
@@ -16,7 +16,7 @@ export const getQuestions = async (groupId: string | null, id: string | null): P
     if (id) {
       urlParams.append('id', id);
     }
-    const res = await fetch(`${apiPath}/questions?${urlParams.toString()}`);
+    const res = await getApi(`${apiPath}/questions`, urlParams, {});
     const {success, data} = (await res.json()) as ApiResult<Question[]>;
 
     if (!success) {
@@ -46,18 +46,7 @@ export const addQuestion = async (questionGroupId: string, question: Question): 
   };
 
   try {
-    const res = await fetch(`${apiPath}/addQuestion`, {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(formData)
-    });
+    const res = await postApi(`${apiPath}/addQuestion`, formData, {});
     const {success, data} = (await res.json()) as ApiResult<string | null>;
 
     if (!success || data === null) {
@@ -81,18 +70,7 @@ export const updateQuestion = async (questionGroupId: string, question: Question
   };
 
   try {
-    const res = await fetch(`${apiPath}/updateQuestion`, {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(formData)
-    });
+    const res = await postApi(`${apiPath}/updateQuestion`, formData, {});
     const {success, data} = (await res.json()) as ApiResult<string | null>;
 
     if (!success || data === null) {
@@ -113,7 +91,7 @@ export const getRandomQuestion = async (groupId: string): Promise<Question | nul
   try {
     const urlParams = new URLSearchParams();
     urlParams.append('groupId', groupId);
-    const res = await fetch(`${apiPath}/getRandomQuestion?${urlParams.toString()}`);
+    const res = await getApi(`${apiPath}/getRandomQuestion`, urlParams, {});
     const {success, data} = (await res.json()) as ApiResult<Question>;
 
     if (!success || data == null) {

@@ -31,7 +31,7 @@ const QuestionGroups = (props: QuestionGroupsProps) => {
   };
 
   useEffect(() => {
-    getQuestionGroups(user.uid)
+    getQuestionGroups()
         .then(res => {
           console.log('get question groups successful');
           setQuestionGroups(res);

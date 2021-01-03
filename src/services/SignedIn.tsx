@@ -1,29 +1,39 @@
 import {useState, useEffect} from 'react';
 
-import {useUser} from 'reactfire';
+import {useAuth, useUser} from 'reactfire';
 
 import {signIn} from './authApi';
 
 export const useSignedIn = () => {
+  const auth = useAuth();
   const {data: user} = useUser();
   const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
-    if (!user) {
-      setSignedIn(false);
-      return;
-    }
+    (async () => {
+      if (!user) {
+        setSignedIn(false);
+        return;
+      }
 
-    signIn(user.uid)
-        .then((signedIn) => {
-          console.log('server sign in', signedIn);
-          setSignedIn(signedIn);
-        })
-        .catch((err) => {
-          console.log('server sign in error', err);
-          setSignedIn(false);
-        });
-  }, [user]);
+      let signedIn: boolean;
+      try {
+        signedIn = await signIn();
+      } catch (err) {
+        console.log('server sign in error', err);
+        return;
+      }
+      console.log('server sign in', signedIn);
+
+      if (signedIn) {
+        setSignedIn(true);
+      } else {
+        console.log('server not signed in, sign out');
+        await auth.signOut();
+        setSignedIn(false);
+      }
+    })();
+  }, [auth, user]);
 
   return signedIn;
 };

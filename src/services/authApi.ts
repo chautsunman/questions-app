@@ -1,32 +1,17 @@
-import {SERVER_HOST} from './serverDetails';
+import {postApi} from './api';
 import {ApiResult} from './ApiResult';
 
-const apiPath = `${SERVER_HOST}/auth`;
+const apiPath = '/api/auth';
 
 type SignInResData = {
   signedIn: boolean
 };
 
-export const signIn = async (uid: string) => {
+export const signIn = async () => {
   console.log('sign in');
 
-  const formData = {
-    uid: uid
-  };
-
   try {
-    const res = await fetch(`${apiPath}/signIn`, {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(formData)
-    });
+    const res = await postApi(`${apiPath}/signIn`, {}, {});
     const {success, data} = (await res.json()) as ApiResult<SignInResData>;
 
     if (!success) {
