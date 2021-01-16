@@ -5,8 +5,6 @@ import {useRouteMatch} from 'react-router';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 
-import {useUser} from 'reactfire';
-
 import QuestionGroupDetails from './QuestionGroupDetails';
 
 import QuestionGroup from "../data/QuestionGroup";
@@ -28,15 +26,14 @@ type QuestionGroupDetailsPageProps = {
 const QuestionGroupDetailsPage = (props: QuestionGroupDetailsPageProps) => {
   const {editMode, questionGroupId, onSaved} = props;
 
-  const {data: user} = useUser();
-
   const [questionGroup, setQuestionGroup] = useState(null as QuestionGroup | null);
 
   useEffect(() => {
     (async () => {
       switch (editMode) {
         case EditMode.ADD:
-          setQuestionGroup(new QuestionGroup());
+          const newQuestionGroup = new QuestionGroup();
+          setQuestionGroup(newQuestionGroup);
           break;
 
         case EditMode.EDIT:

@@ -1,10 +1,10 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 
+import AddIcon from '@material-ui/icons/Add';
+import Fab from '@material-ui/core/Fab';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-
-import {useUser} from 'reactfire';
 
 import {useHistory} from 'react-router-dom';
 
@@ -17,8 +17,6 @@ type QuestionGroupsProps = {
 };
 
 const QuestionGroups = (props: QuestionGroupsProps) => {
-  const {data: user} = useUser();
-
   const [questionGroups, setQuestionGroups] = useState([] as QuestionGroup[]);
 
   const history = useHistory();
@@ -29,6 +27,10 @@ const QuestionGroups = (props: QuestionGroupsProps) => {
     }
     history.push(`/questionGroup/${questionGroupId}`);
   };
+
+  const onNewQuestionGroupClick = useCallback(() => {
+    history.push(`/questionGroup/newQuestionGroup`);
+  }, [history]);
 
   useEffect(() => {
     getQuestionGroups()
@@ -48,6 +50,10 @@ const QuestionGroups = (props: QuestionGroupsProps) => {
           </ListItem>
         ))}
       </List>
+
+      <Fab color="primary" aria-label="new question group" onClick={onNewQuestionGroupClick}>
+        <AddIcon />
+      </Fab>
     </div>
   );
 };

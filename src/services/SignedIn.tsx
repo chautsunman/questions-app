@@ -4,15 +4,33 @@ import {useAuth, useUser} from 'reactfire';
 
 import {signIn} from './authApi';
 
+class SignedIn {
+  signedIn: boolean;
+  uid: string | null;
+
+  constructor(signedIn: boolean, uid: string | null) {
+    this.signedIn = signedIn;
+    this.uid = uid;
+  }
+
+  static getSignedIn(uid: string) {
+    return new SignedIn(true, uid);
+  }
+
+  static getNotSignedIn() {
+    return new SignedIn(false, null);
+  }
+}
+
 export const useSignedIn = () => {
   const auth = useAuth();
   const {data: user} = useUser();
-  const [signedIn, setSignedIn] = useState(false);
+  const [signedIn, setSignedIn] = useState(SignedIn.getNotSignedIn());
 
   useEffect(() => {
     (async () => {
       if (!user) {
-        setSignedIn(false);
+        setSignedIn(SignedIn.getNotSignedIn());
         return;
       }
 
@@ -26,11 +44,11 @@ export const useSignedIn = () => {
       console.log('server sign in', signedIn);
 
       if (signedIn) {
-        setSignedIn(true);
+        setSignedIn(SignedIn.getSignedIn(user.uid));
       } else {
         console.log('server not signed in, sign out');
         await auth.signOut();
-        setSignedIn(false);
+        setSignedIn(SignedIn.getNotSignedIn());
       }
     })();
   }, [auth, user]);

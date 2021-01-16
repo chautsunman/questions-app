@@ -77,7 +77,7 @@ function App() {
               Questions
             </Typography>
 
-            {signedIn && (
+            {signedIn.signedIn && (
               <div>
                 <IconButton
                   aria-label="user account"
@@ -110,7 +110,7 @@ function App() {
           </Toolbar>
         </AppBar>
 
-        {signedIn && (
+        {signedIn.signedIn && (
           <Box flex="1 1 auto">
             <Box height="100%" display="flex" flexDirection="row" flexWrap="nowrap">
               <Box flex="0 0 30%" height="100%" borderRight="1px solid #9E9E9E" display="flex" flexDirection="column">
@@ -144,7 +144,7 @@ function App() {
           </Box>
         )}
 
-        {!signedIn && (
+        {!signedIn.signedIn && (
           <SignInPage />
         )}
       </Box>

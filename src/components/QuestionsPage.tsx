@@ -60,6 +60,10 @@ const QuestionsPageFromRoute = () => {
     return null;
   }
 
+  if (questionGroupId === 'newQuestionGroup') {
+    return null;
+  }
+
   return (
     <QuestionsPage
       questionGroupId={questionGroupId} />

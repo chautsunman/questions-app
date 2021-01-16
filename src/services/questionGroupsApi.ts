@@ -22,7 +22,7 @@ export const getQuestionGroups = async (id: string | null = null): Promise<Quest
     }
 
     console.log('get question groups successful');
-    return data.map((questionGroupObj) => Object.assign(new QuestionGroup(), questionGroupObj));
+    return data.map((questionGroupObj) => Object.assign(new QuestionGroup(), {...questionGroupObj}));
   } catch (err) {
     console.log('get question groups error', err);
     return [];
@@ -39,7 +39,7 @@ export const addQuestionGroup = async (questionGroup: QuestionGroup): Promise<st
   console.log('add question group');
 
   const formData = {
-    questionGroup: questionGroup
+    questionGroup: questionGroup.toObj()
   };
 
   try {
@@ -62,7 +62,7 @@ export const updateQuestionGroup = async (questionGroup: QuestionGroup): Promise
   console.log('update question group');
 
   const formData = {
-    questionGroup: questionGroup
+    questionGroup: questionGroup.toObj()
   };
 
   try {
