@@ -14,11 +14,15 @@ const QuestionDetails = (props: QuestionDetailsProps) => {
   const {question, setQuestion, onSave} = props;
 
   const onQuestionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let newQuestion = question?.clone();
-    if (newQuestion) {
-      newQuestion.question = event.target.value;
-      setQuestion(newQuestion);
-    }
+    let newQuestion = question.clone();
+    newQuestion.question = event.target.value;
+    setQuestion(newQuestion);
+  };
+
+  const onDetailsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let newQuestion = question.clone();
+    newQuestion.details = event.target.value;
+    setQuestion(newQuestion);
   };
 
   return (
@@ -29,6 +33,13 @@ const QuestionDetails = (props: QuestionDetailsProps) => {
         label="Question"
         value={question.question}
         onChange={onQuestionChange}
+        fullWidth
+      />
+
+      <TextField
+        label="Details"
+        value={question.details}
+        onChange={onDetailsChange}
         fullWidth
       />
 

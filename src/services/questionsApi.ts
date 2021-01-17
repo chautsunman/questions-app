@@ -24,7 +24,7 @@ export const getQuestions = async (groupId: string | null, id: string | null): P
     }
 
     console.log('get questions successful');
-    return data.map((questionObj) => Object.assign(new Question(), questionObj));
+    return data.map((questionObj) => Object.assign(new Question(), {...questionObj}));
   } catch (err) {
     console.log('get questions error', err);
     return [];
