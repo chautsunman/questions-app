@@ -42,7 +42,7 @@ const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
             break;
           }
 
-          const question = await getQuestion(questionId);
+          const question = await getQuestion(questionGroupId, questionId);
           setQuestion(question);
           break;
 
@@ -50,7 +50,7 @@ const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
           break;
       }
     })();
-  }, [editMode, questionId]);
+  }, [editMode, questionGroupId, questionId]);
 
   const onSetQuestion = (newQuestion: Question) => {
     setQuestion(newQuestion);
@@ -69,7 +69,7 @@ const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
         questionId = await addQuestion(questionGroupId, question);
         if (questionId !== null) {
           console.log('saved, refreshing');
-          updatedQuestion = await getQuestion(questionId);
+          updatedQuestion = await getQuestion(questionGroupId, questionId);
           setQuestion(updatedQuestion);
           onSaved();
         }
@@ -79,7 +79,7 @@ const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
         questionId = await updateQuestion(questionGroupId, question);
         if (questionId !== null) {
           console.log('saved, refreshing');
-          updatedQuestion = await getQuestion(questionId);
+          updatedQuestion = await getQuestion(questionGroupId, questionId);
           setQuestion(updatedQuestion);
           onSaved();
         }

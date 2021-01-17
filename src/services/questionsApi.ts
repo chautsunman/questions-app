@@ -5,14 +5,12 @@ import {ApiResult} from './ApiResult';
 
 const apiPath = '/api/questions';
 
-export const getQuestions = async (groupId: string | null, id: string | null): Promise<Question[]> => {
+export const getQuestions = async (groupId: string, id: string | null): Promise<Question[]> => {
   console.log('get questions');
 
   try {
     const urlParams = new URLSearchParams();
-    if (groupId) {
-      urlParams.append('groupId', groupId);
-    }
+    urlParams.append('groupId', groupId);
     if (id) {
       urlParams.append('id', id);
     }
@@ -31,9 +29,9 @@ export const getQuestions = async (groupId: string | null, id: string | null): P
   }
 };
 
-export const getQuestion = async (id: string): Promise<Question | null> => {
-  console.log('get question', id);
-  const questions = await getQuestions(null, id);
+export const getQuestion = async (groupId: string, id: string): Promise<Question | null> => {
+  console.log('get question', groupId, id);
+  const questions = await getQuestions(groupId, id);
   return (questions.length) ? questions[0] : null;
 };
 
