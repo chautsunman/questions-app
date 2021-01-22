@@ -11,6 +11,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
+import MsgDialog from './MsgDialog';
+
 import {searchUser} from '../services/userApi';
 
 import QuestionGroup from '../data/QuestionGroup';
@@ -25,6 +27,7 @@ const QuestionGroupDetails = (props: QuestionGroupDetailsProps) => {
   const {questionGroup, setQuestionGroup, onSave} = props;
 
   const [addNewMemberEmail, setAddNewMemberEmail] = useState('');
+  const [msgDialogOpen, setMsgDialogOpen] = useState(false);
 
   const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let newQuestionGroup = questionGroup.clone();
@@ -40,19 +43,24 @@ const QuestionGroupDetails = (props: QuestionGroupDetailsProps) => {
     const user = await searchUser(addNewMemberEmail);
 
     if (user === null) {
+      setMsgDialogOpen(true);
       return;
     }
 
     let newQuestionGroup = questionGroup.clone();
     newQuestionGroup.addMember(user);
     setQuestionGroup(newQuestionGroup);
-  }, [questionGroup, addNewMemberEmail, setQuestionGroup]);
+  }, [questionGroup, addNewMemberEmail, setQuestionGroup, setMsgDialogOpen]);
 
   const onRemoveMember = useCallback((uid: string) => {
     let newQuestionGroup = questionGroup.clone();
     newQuestionGroup.removeMember(uid);
     setQuestionGroup(newQuestionGroup);
   }, [questionGroup, setQuestionGroup]);
+
+  const onMsgDialogClose = useCallback(() => {
+    setMsgDialogOpen(false);
+  }, [setMsgDialogOpen]);
 
   return (
     <div>
@@ -106,6 +114,13 @@ const QuestionGroupDetails = (props: QuestionGroupDetailsProps) => {
       <Button variant="contained" color="secondary" onClick={onSave}>
         Save
       </Button>
+
+      <MsgDialog
+        open={msgDialogOpen}
+        onClose={onMsgDialogClose}
+        title="Cannot add member"
+        msg="Member email is invalid."
+        closeText="Ok" />
     </div>
   );
 };
