@@ -114,11 +114,11 @@ function App() {
           <Box flex="1 1 auto">
             <Box height="100%" display="flex" flexDirection="row" flexWrap="nowrap">
               <Box flex="0 0 30%" height="100%" borderRight="1px solid #9E9E9E" display="flex" flexDirection="column">
-                <Box flex="0 0 30%" borderBottom="1px solid #9E9E9E" padding="16px">
+                <Box flex="0 0 30%" borderBottom="1px solid #9E9E9E">
                   <QuestionGroups />
                 </Box>
 
-                <Box flex="0 0 70%" padding="16px">
+                <Box flex="0 0 70%">
                   <QuestionsPage />
                 </Box>
               </Box>

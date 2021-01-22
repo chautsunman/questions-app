@@ -1,12 +1,22 @@
 import React, {useCallback} from 'react';
 
 import AddIcon from '@material-ui/icons/Add';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
+import { makeStyles } from '@material-ui/core/styles';
 
 import {useRouteMatch, useHistory} from "react-router-dom";
 
 import Questions from './Questions';
+
+const useStyles = makeStyles({
+  addFab: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16
+  }
+});
 
 type QuestionsPageProps = {
   questionGroupId: string
@@ -14,6 +24,8 @@ type QuestionsPageProps = {
 
 const QuestionsPage = (props: QuestionsPageProps) => {
   const {questionGroupId} = props;
+
+  const classes = useStyles();
 
   const history = useHistory();
 
@@ -27,18 +39,22 @@ const QuestionsPage = (props: QuestionsPageProps) => {
   }, [questionGroupId, history]);
 
   return (
-    <div>
+    <Box height="100%" width="100%" padding="16px" position="relative">
       <Button variant="contained" color="secondary" onClick={onPickQuestionClick}>
         Pick a random question
       </Button>
 
-      <Fab color="primary" aria-label="new question" onClick={onNewQuestionClick}>
+      <Fab
+        color="primary"
+        aria-label="new question"
+        onClick={onNewQuestionClick}
+        className={classes.addFab}>
         <AddIcon />
       </Fab>
 
       <Questions
         questionGroupId={questionGroupId} />
-    </div>
+    </Box>
   );
 };
 
