@@ -80,6 +80,12 @@ const QuestionGroupDetails = (props: QuestionGroupDetailsProps) => {
                 </ListItemSecondaryAction>
               )
             }
+            {
+              questionGroup.isOwner(user)
+              && (
+                <ListItemSecondaryAction onClick={() => user.uid != null && onRemoveMember(user.uid)}>Owner</ListItemSecondaryAction>
+              )
+            }
           </ListItem>
         ))}
         <ListItem>
