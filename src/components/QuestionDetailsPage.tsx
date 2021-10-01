@@ -130,7 +130,7 @@ const QuestionDetailsPageFromRoute = () => {
         setQuestionId(questionIdFromParams);
       }
     })();
-  }, [questionIdFromParams, history]);
+  }, [questionIdFromParams, questionGroupId, history]);
 
   if (editMode === EditMode.INVALID) {
     return (

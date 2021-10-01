@@ -1,5 +1,12 @@
 import firebase from 'firebase';
 
+const questionsServer = process.env.REACT_APP_QUESTIONS_SERVER;
+console.log('questionsServer', questionsServer);
+
+const getApiPath = (apiPath: string): string => {
+  return `${questionsServer}${apiPath}`;
+};
+
 const getIdToken = async () => {
   try {
     const idToken = await firebase.auth().currentUser?.getIdToken(false);
@@ -16,7 +23,7 @@ const getApi = async (apiPath: string, urlParams: URLSearchParams, options: obje
     throw new Error('Unauthrorized');
   }
 
-  return fetch(`${apiPath}?${urlParams.toString()}`, {
+  return fetch(`${getApiPath(apiPath)}?${urlParams.toString()}`, {
     ...options,
     method: 'GET',
     headers: {
@@ -31,7 +38,7 @@ const postApi = async (apiPath: string, data: object, options: object) => {
     throw new Error('Unauthrorized');
   }
 
-  return fetch(apiPath, {
+  return fetch(getApiPath(apiPath), {
     ...options,
     method: 'POST',
     mode: 'cors',
