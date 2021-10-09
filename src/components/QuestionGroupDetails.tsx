@@ -50,7 +50,8 @@ const QuestionGroupDetails = (props: QuestionGroupDetailsProps) => {
     let newQuestionGroup = questionGroup.clone();
     newQuestionGroup.addMember(user);
     setQuestionGroup(newQuestionGroup);
-  }, [questionGroup, addNewMemberEmail, setQuestionGroup, setMsgDialogOpen]);
+    setAddNewMemberEmail('');
+  }, [questionGroup, addNewMemberEmail, setQuestionGroup, setAddNewMemberEmail, setMsgDialogOpen]);
 
   const onRemoveMember = useCallback((uid: string) => {
     let newQuestionGroup = questionGroup.clone();

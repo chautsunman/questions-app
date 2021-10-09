@@ -1,3 +1,5 @@
+import {cloneDeep} from 'lodash';
+
 import User from './User';
 
 export default class QuestionGroup {
@@ -27,7 +29,7 @@ export default class QuestionGroup {
     this._userDetails = [...userDetails];
   };
 
-  addMember = (user: User) => {
+  addMember(user: User) {
     if (user.uid === null) {
       return;
     }
@@ -38,20 +40,20 @@ export default class QuestionGroup {
     this.removeOldMembers.delete(user.uid);
   };
 
-  removeMember = (uid: string) => {
+  removeMember(uid: string) {
     this.removeOldMembers.add(uid);
     this.addNewMembers = this.addNewMembers.filter(member => !member.uid && member.uid !== uid);
   };
 
-  isOwner = (user: User) => {
+  isOwner(user: User) {
     if (user.uid === null) {
       return false;
     }
     return this.owners.includes(user.uid);
   };
 
-  clone = (): QuestionGroup => {
-    return Object.assign(new QuestionGroup(), {...this});
+  clone(): QuestionGroup {
+    return cloneDeep(this);
   };
 
   toObj (): any {
