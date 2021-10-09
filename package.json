@@ -28,6 +28,7 @@
     "emulator": "firebase emulators:start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "deploy": "firebase deploy --only hosting",
     "eject": "react-scripts eject"
   },
   "proxy": "http://localhost:8080",
