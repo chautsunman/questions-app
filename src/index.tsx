@@ -30,7 +30,9 @@ const Root = () => {
 
   if (process.env.NODE_ENV !== 'production') {
     // Set up emulators
-    connectAuthEmulator(auth, 'http://localhost:9099');
+    if (process.env.REACT_APP_FIREBASE_EMULATE === 'true') {
+      connectAuthEmulator(auth, 'http://localhost:9099');
+    }
   }
 
   return (
