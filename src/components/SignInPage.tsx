@@ -3,16 +3,15 @@ import {useCallback} from 'react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 
-import firebase from 'firebase';
-import {useAuth} from 'reactfire';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 const SignInPage = () => {
-  const auth = useAuth();
+  const auth = getAuth();
 
   const onGoogleSignIn = useCallback(() => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    
-    auth.signInWithPopup(provider)
+    const provider = new GoogleAuthProvider();
+
+    signInWithPopup(auth, provider)
         .then(() => {
           console.log('signed in');
         })
@@ -20,7 +19,7 @@ const SignInPage = () => {
           console.log('sign in error', err);
         });
   }, [auth]);
-  
+
   return (
     <Box padding="16px">
       <Button variant="contained" color="secondary" onClick={onGoogleSignIn}>

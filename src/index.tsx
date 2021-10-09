@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom';
 
 import {BrowserRouter as Router} from "react-router-dom";
 
-import { FirebaseAppProvider } from 'reactfire';
+import { FirebaseAppProvider, AuthProvider, useFirebaseApp } from 'reactfire';
+import {getAuth, connectAuthEmulator} from 'firebase/auth';
 
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { deepPurple, orange } from '@material-ui/core/colors';
 
 import './index.css';
@@ -16,21 +17,37 @@ import firebaseConfig from './firebaseConfig.json';
 
 import reportWebVitals from './reportWebVitals';
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: deepPurple,
     secondary: orange
   },
 });
 
-ReactDOM.render(
-  <React.StrictMode>
-    <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+const Root = () => {
+  const app = useFirebaseApp();
+  const auth = getAuth(app);
+
+  if (process.env.NODE_ENV !== 'production') {
+    // Set up emulators
+    connectAuthEmulator(auth, 'http://localhost:9099');
+  }
+
+  return (
+    <AuthProvider sdk={auth}>
       <ThemeProvider theme={theme}>
         <Router>
           <App />
         </Router>
       </ThemeProvider>
+    </AuthProvider>
+  );
+};
+
+ReactDOM.render(
+  <React.StrictMode>
+    <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+      <Root/>
     </FirebaseAppProvider>
   </React.StrictMode>,
   document.getElementById('root')

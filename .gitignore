@@ -7,6 +7,8 @@
 
 firebaseConfig.json
 .firebase
+firebase-debug.log
+ui-debug.log
 
 # testing
 /coverage

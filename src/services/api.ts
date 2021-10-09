@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import { getAuth } from "firebase/auth";
 
 const questionsServer = process.env.REACT_APP_QUESTIONS_SERVER;
 console.log('questionsServer', questionsServer);
@@ -9,7 +9,8 @@ const getApiPath = (apiPath: string): string => {
 
 const getIdToken = async () => {
   try {
-    const idToken = await firebase.auth().currentUser?.getIdToken(false);
+    const auth = getAuth();
+    const idToken = await auth.currentUser?.getIdToken(false);
     return idToken;
   } catch (err) {
     console.log('Cannot get ID token');
