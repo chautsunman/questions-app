@@ -4,12 +4,15 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import LoadingContext from '../context/LoadingContext';
 
 const SignInPage = () => {
   const auth = getAuth();
 
-  const onGoogleSignIn = useCallback(() => {
+  const onGoogleSignIn = useCallback((setLoading: (loading: boolean) => void) => {
     const provider = new GoogleAuthProvider();
+
+    // setLoading(true);
 
     signInWithPopup(auth, provider)
         .then(() => {
@@ -17,15 +20,22 @@ const SignInPage = () => {
         })
         .catch((err) => {
           console.log('sign in error', err);
+        })
+        .then(() => {
+          // setLoading(false);
         });
   }, [auth]);
 
   return (
-    <Box padding="16px">
-      <Button variant="contained" color="secondary" onClick={onGoogleSignIn}>
-        Sign in with Google
-      </Button>
-    </Box>
+    <LoadingContext.Consumer>
+      {({setLoading}) => (
+        <Box padding="16px">
+          <Button variant="contained" color="secondary" onClick={() => onGoogleSignIn(setLoading)}>
+            Sign in with Google
+          </Button>
+        </Box>
+      )}
+    </LoadingContext.Consumer>
   );
 };
 

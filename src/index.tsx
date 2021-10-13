@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import {BrowserRouter as Router} from "react-router-dom";
@@ -12,6 +12,8 @@ import { deepPurple, orange } from '@material-ui/core/colors';
 import './index.css';
 
 import App from './App';
+
+import LoadingContext from './context/LoadingContext';
 
 import firebaseConfig from './firebaseConfig.json';
 
@@ -35,11 +37,15 @@ const Root = () => {
     }
   }
 
+  const [loading, setLoading] = useState(false);
+
   return (
     <AuthProvider sdk={auth}>
       <ThemeProvider theme={theme}>
         <Router>
-          <App />
+          <LoadingContext.Provider value={{loading, setLoading}}>
+            <App />
+          </LoadingContext.Provider>
         </Router>
       </ThemeProvider>
     </AuthProvider>

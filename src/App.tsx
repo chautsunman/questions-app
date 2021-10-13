@@ -23,6 +23,8 @@ import SignInPage from './components/SignInPage';
 
 import {useSignedIn} from './services/SignedIn';
 
+import LoadingComp from './context/LoadingComp';
+
 const useStyles = makeStyles({
   appRoot: {
     height: '100vh'
@@ -70,84 +72,86 @@ function App() {
 
   return (
     <div className={classes.appRoot}>
-      <Box height="100%" display="flex" flexDirection="column">
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" className={classes.appName} onClick={goHome}>
-              Questions
-            </Typography>
+      <LoadingComp>
+        <Box height="100%" display="flex" flexDirection="column">
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h6" className={classes.appName} onClick={goHome}>
+                Questions
+              </Typography>
 
-            {signedIn.signedIn && (
-              <div>
-                <IconButton
-                  aria-label="user account"
-                  aria-controls="user-account"
-                  aria-haspopup="true"
-                  onClick={onOpenUserAccount}
-                  color="inherit"
-                >
-                  <AccountCircle />
-                </IconButton>
-                <Menu
-                  id="user-account"
-                  anchorEl={userAccountAnchorEl}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={userAccountOpen}
-                  onClose={onCloseUserAccount}
-                >
-                  <MenuItem onClick={onSignOut}>Sign Out</MenuItem>
-                </Menu>
-              </div>
-            )}
-          </Toolbar>
-        </AppBar>
+              {signedIn.signedIn && (
+                <div>
+                  <IconButton
+                    aria-label="user account"
+                    aria-controls="user-account"
+                    aria-haspopup="true"
+                    onClick={onOpenUserAccount}
+                    color="inherit"
+                  >
+                    <AccountCircle />
+                  </IconButton>
+                  <Menu
+                    id="user-account"
+                    anchorEl={userAccountAnchorEl}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    open={userAccountOpen}
+                    onClose={onCloseUserAccount}
+                  >
+                    <MenuItem onClick={onSignOut}>Sign Out</MenuItem>
+                  </Menu>
+                </div>
+              )}
+            </Toolbar>
+          </AppBar>
 
-        {signedIn.signedIn && (
-          <Box flex="1 1 auto">
-            <Box height="100%" display="flex" flexDirection="row" flexWrap="nowrap">
-              <Box flex="0 0 30%" height="100%" borderRight="1px solid #9E9E9E" display="flex" flexDirection="column">
-                <Box flex="0 0 30%" borderBottom="1px solid #9E9E9E">
-                  <QuestionGroups />
+          {signedIn.signedIn && (
+            <Box flex="1 1 auto">
+              <Box height="100%" display="flex" flexDirection="row" flexWrap="nowrap">
+                <Box flex="0 0 30%" height="100%" borderRight="1px solid #9E9E9E" display="flex" flexDirection="column">
+                  <Box flex="0 0 30%" borderBottom="1px solid #9E9E9E">
+                    <QuestionGroups />
+                  </Box>
+
+                  <Box flex="0 0 70%">
+                    <QuestionsPage />
+                  </Box>
                 </Box>
 
-                <Box flex="0 0 70%">
-                  <QuestionsPage />
+                <Box flex="1 1 auto" height="100%">
+                  <Switch>
+                    <Route path="/question/:questionGroupId/:questionId">
+                      <QuestionDetailsPage />
+                    </Route>
+
+                    <Route path="/questionGroup/:questionGroupId">
+                      <QuestionGroupDetailsPage />
+                    </Route>
+
+                    <Route path="/" exact>
+                      <Typography variant="h2">
+                        Questions
+                      </Typography>
+                    </Route>
+                  </Switch>
                 </Box>
-              </Box>
-
-              <Box flex="1 1 auto" height="100%">
-                <Switch>
-                  <Route path="/question/:questionGroupId/:questionId">
-                    <QuestionDetailsPage />
-                  </Route>
-
-                  <Route path="/questionGroup/:questionGroupId">
-                    <QuestionGroupDetailsPage />
-                  </Route>
-
-                  <Route path="/" exact>
-                    <Typography variant="h2">
-                      Questions
-                    </Typography>
-                  </Route>
-                </Switch>
               </Box>
             </Box>
-          </Box>
-        )}
+          )}
 
-        {!signedIn.signedIn && (
-          <SignInPage />
-        )}
-      </Box>
+          {!signedIn.signedIn && (
+            <SignInPage />
+          )}
+        </Box>
+      </LoadingComp>
     </div>
   );
 }
