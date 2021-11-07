@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "questions-my"
-  }
+    "default": "questions-my",
+    "dev": "questions-my-dev"
+  },
+  "targets": {}
 }

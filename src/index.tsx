@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 
 import {BrowserRouter as Router} from "react-router-dom";
 
-import { FirebaseAppProvider, AuthProvider, useFirebaseApp } from 'reactfire';
+import { FirebaseAppProvider, AuthProvider, StorageProvider, useFirebaseApp } from 'reactfire';
 import {getAuth, connectAuthEmulator} from 'firebase/auth';
+import { getStorage, connectStorageEmulator } from "firebase/storage";
 
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { deepPurple, orange } from '@material-ui/core/colors';
@@ -41,11 +42,13 @@ interface FirebaseDevProps {
 const FirebaseDev = (props: FirebaseDevProps) => {
   const app = useFirebaseApp();
   const auth = getAuth(app);
+  const storage = getStorage();
 
   if (process.env.NODE_ENV !== 'production') {
     // Set up emulators
     if (process.env.REACT_APP_FIREBASE_EMULATE === 'true') {
       connectAuthEmulator(auth, 'http://localhost:9099');
+      connectStorageEmulator(storage, "localhost", 9199);
     }
   }
 
@@ -55,6 +58,7 @@ const FirebaseDev = (props: FirebaseDevProps) => {
 const Root = () => {
   const app = useFirebaseApp();
   const auth = getAuth(app);
+  const storage = getStorage();
 
   const [loading, setLoading] = useState(0);
   const isLoading = useCallback(() => loading > 0, [loading]);
@@ -73,13 +77,15 @@ const Root = () => {
 
   return (
     <AuthProvider sdk={auth}>
-      <ThemeProvider theme={theme}>
-        <Router>
-          <LoadingContext.Provider value={loadingContextVal}>
-            <App />
-          </LoadingContext.Provider>
-        </Router>
-      </ThemeProvider>
+      <StorageProvider sdk={storage}>
+        <ThemeProvider theme={theme}>
+          <Router>
+            <LoadingContext.Provider value={loadingContextVal}>
+              <App />
+            </LoadingContext.Provider>
+          </Router>
+        </ThemeProvider>
+      </StorageProvider>
     </AuthProvider>
   );
 };

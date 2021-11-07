@@ -29,6 +29,7 @@ const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
   const {editMode, questionGroupId, questionId, onSaved} = props;
 
   const [question, setQuestion] = useState(null as Question | null);
+  const [uploadPhotos, setUploadPhotos] = useState(null as FileList | null);
 
   useEffect(() => {
     (async () => {
@@ -66,28 +67,30 @@ const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
     let questionId: string | null, updatedQuestion: Question | null;
     switch (editMode) {
       case EditMode.ADD:
-        questionId = await addQuestion(questionGroupId, question);
+        questionId = await addQuestion(questionGroupId, question, uploadPhotos);
         if (questionId !== null) {
           console.log('saved, refreshing');
           updatedQuestion = await getQuestion(questionGroupId, questionId);
           setQuestion(updatedQuestion);
-          onSaved();
         }
         break;
 
       case EditMode.EDIT:
-        questionId = await updateQuestion(questionGroupId, question);
+        questionId = await updateQuestion(questionGroupId, question, uploadPhotos);
         if (questionId !== null) {
           console.log('saved, refreshing');
           updatedQuestion = await getQuestion(questionGroupId, questionId);
           setQuestion(updatedQuestion);
-          onSaved();
         }
         break;
 
       default:
         break;
     }
+
+    setUploadPhotos(null);
+
+    onSaved();
   };
 
   if (editMode === EditMode.INVALID || !question) {
@@ -101,6 +104,7 @@ const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
       <QuestionDetails
         question={question}
         setQuestion={onSetQuestion}
+        setUploadPhotos={setUploadPhotos}
         onSave={onSave} />
     </Box>
   );

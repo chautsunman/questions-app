@@ -1,9 +1,16 @@
+import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { v4 as uuidv4 } from 'uuid';
+
 import Question from '../data/Question';
 
 import {getApi, postApi} from './api';
 import {ApiResult} from './ApiResult';
 
 const apiPath = '/api/questions';
+const getPhotosRootRef = () => {
+  const storage = getStorage();
+  return ref(storage, 'photos');
+};
 
 export const getQuestions = async (groupId: string, id: string | null): Promise<Question[]> => {
   console.log('get questions');
@@ -35,7 +42,27 @@ export const getQuestion = async (groupId: string, id: string): Promise<Question
   return (questions.length) ? questions[0] : null;
 };
 
-export const addQuestion = async (questionGroupId: string, question: Question): Promise<string | null> => {
+const uploadPhotos = async (id: string, photos: FileList | null) => {
+  if (!id || !photos) {
+    return true;
+  }
+  try {
+    const folderRef = ref(getPhotosRootRef(), id);
+    for (let i = 0; i < photos.length; i++) {
+      const photoRef = ref(folderRef, uuidv4());
+      const photo = photos[i];
+      const snapshot = await uploadBytes(photoRef, photo);
+      console.log(`uploaded photo ${i}`);
+    }
+  } catch (err) {
+    console.log('upload photos error', err);
+    return false;
+  }
+  console.log('uploaded all photos');
+  return true;
+};
+
+export const addQuestion = async (questionGroupId: string, question: Question, photos: FileList | null): Promise<string | null> => {
   console.log('add question');
 
   const formData = {
@@ -46,9 +73,13 @@ export const addQuestion = async (questionGroupId: string, question: Question): 
   try {
     const res = await postApi(`${apiPath}/addQuestion`, formData, {});
     const {success, data} = (await res.json()) as ApiResult<string | null>;
-
     if (!success || data === null) {
       throw new Error('add question api successful, but not added');
+    }
+
+    const uploadPhotosSuccess = await uploadPhotos(data, photos);
+    if (!uploadPhotosSuccess) {
+      throw new Error('upload photos error');
     }
 
     console.log('add question successful');
@@ -59,7 +90,7 @@ export const addQuestion = async (questionGroupId: string, question: Question): 
   }
 };
 
-export const updateQuestion = async (questionGroupId: string, question: Question): Promise<string | null> => {
+export const updateQuestion = async (questionGroupId: string, question: Question, photos: FileList | null): Promise<string | null> => {
   console.log('update question');
 
   const formData = {
@@ -70,9 +101,13 @@ export const updateQuestion = async (questionGroupId: string, question: Question
   try {
     const res = await postApi(`${apiPath}/updateQuestion`, formData, {});
     const {success, data} = (await res.json()) as ApiResult<string | null>;
-
     if (!success || data === null) {
       throw new Error('update question api successful, but not added');
+    }
+
+    const uploadPhotosSuccess = await uploadPhotos(data, photos);
+    if (!uploadPhotosSuccess) {
+      throw new Error('upload photos error');
     }
 
     console.log('update question successful');
