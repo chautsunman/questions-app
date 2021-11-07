@@ -1,4 +1,4 @@
-import React from 'react';
+import { useContext } from 'react';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -6,14 +6,7 @@ import { makeStyles } from '@material-ui/core';
 
 import LoadingContext from './LoadingContext';
 
-interface LoadingCompProps {
-  children: React.ReactNode
-}
-
 const useStyles = makeStyles({
-  root: {
-    position: 'relative'
-  },
   loadingComp: {
     display: 'flex',
     justifyContent: 'center',
@@ -29,29 +22,19 @@ const useStyles = makeStyles({
   }
 });
 
-const _LoadingComp = () => {
+const LoadingComp = () => {
   const classes = useStyles();
+
+  const {isLoading} = useContext(LoadingContext);
+
+  if (!isLoading()) {
+    return null;
+  }
 
   return (
     <div className={classes.loadingComp}>
       <CircularProgress />
     </div>
-  );
-};
-
-const LoadingComp = (props: LoadingCompProps) => {
-  const classes = useStyles();
-
-  return (
-    <LoadingContext.Consumer>
-      {({loading}) => (
-        <div className={classes.root}>
-          {props.children}
-
-          {loading && <_LoadingComp />}
-        </div>
-      )}
-    </LoadingContext.Consumer>
   );
 };
 

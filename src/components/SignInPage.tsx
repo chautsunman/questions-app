@@ -1,4 +1,4 @@
-import {useCallback} from 'react';
+import {useCallback, useContext} from 'react';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -9,33 +9,33 @@ import LoadingContext from '../context/LoadingContext';
 const SignInPage = () => {
   const auth = getAuth();
 
-  const onGoogleSignIn = useCallback((setLoading: (loading: boolean) => void) => {
+  const {addLoading, removeLoading} = useContext(LoadingContext);
+
+  const onGoogleSignIn = useCallback(() => {
     const provider = new GoogleAuthProvider();
 
-    // setLoading(true);
+    addLoading();
 
     signInWithPopup(auth, provider)
         .then(() => {
           console.log('signed in');
+          return true;
         })
         .catch((err) => {
           console.log('sign in error', err);
+          return true;
         })
         .then(() => {
-          // setLoading(false);
+          removeLoading();
         });
-  }, [auth]);
+  }, [auth, addLoading, removeLoading]);
 
   return (
-    <LoadingContext.Consumer>
-      {({setLoading}) => (
-        <Box padding="16px">
-          <Button variant="contained" color="secondary" onClick={() => onGoogleSignIn(setLoading)}>
-            Sign in with Google
-          </Button>
-        </Box>
-      )}
-    </LoadingContext.Consumer>
+    <Box padding="16px">
+      <Button variant="contained" color="secondary" onClick={onGoogleSignIn}>
+        Sign in with Google
+      </Button>
+    </Box>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 
 import {BrowserRouter as Router} from "react-router-dom";
@@ -26,7 +26,11 @@ const theme = createTheme({
   },
 });
 
-const Root = () => {
+interface FirebaseDevProps {
+  children: React.ReactNode
+}
+
+const FirebaseDev = (props: FirebaseDevProps) => {
   const app = useFirebaseApp();
   const auth = getAuth(app);
 
@@ -37,13 +41,33 @@ const Root = () => {
     }
   }
 
-  const [loading, setLoading] = useState(false);
+  return <div>{props.children}</div>;
+};
+
+const Root = () => {
+  const app = useFirebaseApp();
+  const auth = getAuth(app);
+
+  const [loading, setLoading] = useState(0);
+  const isLoading = useCallback(() => loading > 0, [loading]);
+  const addLoading = useCallback(() => {
+    setLoading((oldLoading) => oldLoading + 1);
+  }, [setLoading]);
+  const removeLoading = useCallback(() => {
+    setLoading((oldLoading) => oldLoading - 1);
+  }, [setLoading]);
+  const loadingContextVal = useMemo(() => ({
+    _loading: loading,
+    isLoading,
+    addLoading,
+    removeLoading
+  }), [loading, isLoading, addLoading, removeLoading]);
 
   return (
     <AuthProvider sdk={auth}>
       <ThemeProvider theme={theme}>
         <Router>
-          <LoadingContext.Provider value={{loading, setLoading}}>
+          <LoadingContext.Provider value={loadingContextVal}>
             <App />
           </LoadingContext.Provider>
         </Router>
@@ -55,7 +79,9 @@ const Root = () => {
 ReactDOM.render(
   <React.StrictMode>
     <FirebaseAppProvider firebaseConfig={firebaseConfig}>
-      <Root/>
+      <FirebaseDev>
+        <Root/>
+      </FirebaseDev>
     </FirebaseAppProvider>
   </React.StrictMode>,
   document.getElementById('root')

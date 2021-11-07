@@ -1,10 +1,17 @@
 import React from 'react';
 
-const LoadingContext = React.createContext({
-  loading: false,
-  setLoading: (loading: boolean) => {
+interface ILoadingContext {
+  _loading: number;
+  isLoading: () => boolean;
+  addLoading: () => void;
+  removeLoading: () => void;
+}
 
-  }
+const LoadingContext = React.createContext<ILoadingContext>({
+  _loading: 0,
+  isLoading: () => false,
+  addLoading: () => {},
+  removeLoading: () => {}
 });
 
 export default LoadingContext;
