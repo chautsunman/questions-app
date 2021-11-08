@@ -2,6 +2,9 @@ import { useCallback, useRef } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
 
 import { styled } from '@mui/material/styles';
 
@@ -13,13 +16,14 @@ const UploadPhotoInput = styled('input')({
 
 type QuestionDetailsProps = {
   question: Question;
+  photoUrls: string[];
   setQuestion: (newQuestion: Question) => void;
   setUploadPhotos: (photos: FileList) => void;
   onSave: () => Promise<void>;
 };
 
 const QuestionDetails = (props: QuestionDetailsProps) => {
-  const {question, setQuestion, onSave} = props;
+  const {question, photoUrls, setQuestion, onSave} = props;
 
   const uploadPhotoRef = useRef<HTMLInputElement>(null);
 
@@ -82,6 +86,20 @@ const QuestionDetails = (props: QuestionDetailsProps) => {
       <Button variant="contained" color="secondary" onClick={onSave}>
         Save
       </Button>
+
+      <Box sx={{ width: '100%', height: 450 }}>
+        <ImageList sx={{ width: '100%', height: '100%' }} cols={3} rowHeight={164}>
+          {photoUrls.map((photoUrl) => (
+            <ImageListItem key={photoUrl}>
+              <img
+                src={photoUrl}
+                alt={photoUrl}
+                loading="lazy"
+              />
+            </ImageListItem>
+          ))}
+        </ImageList>
+      </Box>
     </div>
   );
 };

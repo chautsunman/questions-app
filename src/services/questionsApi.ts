@@ -1,4 +1,4 @@
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
 
 import Question from '../data/Question';
@@ -137,4 +137,20 @@ export const getRandomQuestion = async (groupId: string): Promise<Question | nul
     console.log('get random question error', err);
     return null;
   }
+};
+
+export const getPhotoUrls = async (id: string) => {
+  let urls: string[] = [];
+  try {
+    const photosRootRef = getPhotosRootRef();
+    const photosRef = ref(photosRootRef, id);
+    const listRes = await listAll(photosRef);
+    const photoNames = listRes.items.map((itemRef) => itemRef.name);
+    const getDownloadUrlPromises = photoNames.map((photoName) => getDownloadURL(ref(photosRef, photoName)));
+    const getDownloadUrlAllPromise = Promise.all(getDownloadUrlPromises);
+    urls = await getDownloadUrlAllPromise;
+  } catch (err) {
+    console.log('get photo urls error', err);
+  }
+  return urls;
 };

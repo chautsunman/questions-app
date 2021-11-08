@@ -10,7 +10,7 @@ import QuestionDetails from './QuestionDetails';
 
 import Question from "../data/Question";
 
-import {getQuestion, addQuestion, updateQuestion, getRandomQuestion} from '../services/questionsApi';
+import {getQuestion, addQuestion, updateQuestion, getRandomQuestion, getPhotoUrls} from '../services/questionsApi';
 
 enum EditMode {
   EDIT,
@@ -29,6 +29,7 @@ const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
   const {editMode, questionGroupId, questionId, onSaved} = props;
 
   const [question, setQuestion] = useState(null as Question | null);
+  const [photoUrls, setPhotoUrls] = useState([] as string[]);
   const [uploadPhotos, setUploadPhotos] = useState(null as FileList | null);
 
   useEffect(() => {
@@ -45,13 +46,15 @@ const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
 
           const question = await getQuestion(questionGroupId, questionId);
           setQuestion(question);
+          const photoUrls = await getPhotoUrls(questionId);
+          setPhotoUrls(photoUrls);
           break;
 
         default:
           break;
       }
     })();
-  }, [editMode, questionGroupId, questionId]);
+  }, [editMode, questionGroupId, questionId, setQuestion, setPhotoUrls]);
 
   const onSetQuestion = (newQuestion: Question) => {
     setQuestion(newQuestion);
@@ -103,6 +106,7 @@ const QuestionDetailsPage = (props: QuestionDetailsPageProps) => {
     <Box padding="16px">
       <QuestionDetails
         question={question}
+        photoUrls={photoUrls}
         setQuestion={onSetQuestion}
         setUploadPhotos={setUploadPhotos}
         onSave={onSave} />
